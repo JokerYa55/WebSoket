@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <h1>Collaborative Whiteboard App</h1>
+        <div id="output"></div>
+        <div id="idInput">
+            <input type="text" id="idMessage">
+            <button onclick="sendMessage()">Отправить</button>
+
+        </div>
+        <script>
+
+            var wsUri = "ws://" + document.location.host + document.location.pathname + "endpoint";
+            var websocket = new WebSocket(wsUri);
+
+
+            websocket.onerror = function (evt) {
+                onError(evt);
+            };
+
+            websocket.onmessage = function (evt) {
+                onMessage(evt);
+            };
+
+            function onMessage(evt) {
+                console.log("received: " + evt.data);
+            }
+
+            function onError(evt) {
+                writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+            }
+
+            function sendMessage() {
+                var input = document.getElementById("idMessage");
+                //console.log(input.value);
+                websocket.send(input.value);
+            }
+
+            // For testing purposes
+            var output = document.getElementById("output");
+            websocket.onopen = function (evt) {
+                onOpen(evt);
+            };
+
+            function writeToScreen(message) {
+                output.innerHTML += message + "<br>";
+            }
+
+            function onOpen() {
+                writeToScreen("Connected to " + wsUri);
+                websocket.send("11111111");
+            }
+// End test functions
+        </script>
+    </body>
+</html>
